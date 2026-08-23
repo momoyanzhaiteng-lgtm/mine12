@@ -7,7 +7,7 @@ import os
 TOKEN = os.getenv("TOKEN")
 
 # HuggingFace API
-HF_API_URL = "https://api-inference.huggingface.co/models/google/gemma-2-2b-it"
+HF_API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct"
 HF_TOKEN = os.getenv("HF_TOKEN")   # ← 追加
 HEADERS = {
     "Content-Type": "application/json",
