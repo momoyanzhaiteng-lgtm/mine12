@@ -6,9 +6,9 @@ from huggingface_hub import InferenceClient
 TOKEN = os.getenv("TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Hugging Face 公式クライアントの初期化
+# 無料API対応モデルに変更（Qwen2.5-Coder-32B-Instruct は日本語も流暢に話せます）
 hf_client = InferenceClient(
-    model="Qwen/Qwen2.5-7B-Instruct",
+    model="Qwen/Qwen2.5-Coder-32B-Instruct",
     token=HF_TOKEN
 )
 
@@ -19,15 +19,13 @@ FIXED_RESPONSES = {
     "ping": "pong!",
 }
 
-# AIへ質問する関数（公式ライブラリを非同期実行）
 async def ask_ai(prompt: str) -> str:
     messages = [
-        {"role": "system", "content": "あなたは親切で優秀なアシスタントです。日本語で短く分かりやすく回答してください。"},
+        {"role": "system", "content": "あなたは親切で優秀なゲームアシスタントです。日本語で短く分かりやすく回答してください。"},
         {"role": "user", "content": prompt}
     ]
 
     try:
-        # 重い処理を別スレッドで実行してDiscord Botの同期を止めないようにする
         loop = asyncio.get_running_loop()
         response = await loop.run_in_executor(
             None,
@@ -42,7 +40,6 @@ async def ask_ai(prompt: str) -> str:
     except Exception as e:
         return f"通信エラーが発生しました: {str(e)}"
 
-# --- 以下、Discord Botのon_messageなどの処理はそのまま ---
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
