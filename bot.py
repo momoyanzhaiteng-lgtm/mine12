@@ -1,12 +1,26 @@
 import os
 import asyncio
+import threading
+from flask import Flask
 import discord
 from huggingface_hub import InferenceClient
+
+# Webサーバー設定（Renderのヘルスチェック用）
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=int(os.getenv("PORT", 8080)))
+
+# Flaskを別スレッドで起動
+threading.Thread(target=run_flask).start()
 
 TOKEN = os.getenv("TOKEN")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Botが全自動応答するチャンネルID（環境変数 ALLOWED_CHANNEL_ID から取得）
 env_channels = os.getenv("ALLOWED_CHANNEL_ID", "")
 ALLOWED_CHANNEL_IDS = [int(ch.strip()) for ch_id in env_channels.split(",") if ch_id.strip().isdigit()]
 
@@ -80,7 +94,6 @@ async def on_message(message: discord.Message):
     if message.author == client.user:
         return
 
-    # 指定されたチャンネル以外からの投稿は無視
     if ALLOWED_CHANNEL_IDS and message.channel.id not in ALLOWED_CHANNEL_IDS:
         return
 
